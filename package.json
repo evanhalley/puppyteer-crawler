@@ -1,0 +1,23 @@
+{
+  "name": "puppet-teer-crawler",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/evanhalley/puppet-teer-crawler.git"
+  },
+  "author": "Evan Halley (evan.halley@gmail.com)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/evanhalley/puppet-teer-crawler/issues"
+  },
+  "homepage": "https://github.com/evanhalley/puppet-teer-crawler#readme",
+  "dependencies": {
+    "headless-chrome-crawler": "^1.8.0",
+    "request": "^2.88.0"
+  }
+}
