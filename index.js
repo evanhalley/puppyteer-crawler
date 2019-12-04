@@ -3,13 +3,59 @@
 const HCCrawler = require('headless-chrome-crawler');
 const request = require('request');
 const fs = require('fs');
+const tf = require('@tensorflow/tfjs');
+require('@tensorflow/tfjs-node');
+const mobilenet = require('@tensorflow-models/mobilenet');
+const jpeg = require('jpeg-js');
+
+const NUMBER_OF_CHANNELS = 3
+
+
+let model = null;
 
 function saveImage(url) {
-    let file = fs.createWriteStream(`./tmp/${new Date().getTime()}.jpg`);
-    request(url).pipe(file).on('close', () => {});
+    let filename = `./tmp/${new Date().getTime()}.jpg`;
+    let file = fs.createWriteStream(filename);
+    request(url).pipe(file).on('close', async () => {
+
+        let image = readImage(filename);
+        const input = imageToInput(image, NUMBER_OF_CHANNELS);
+        let predictions = await model.classify(input);
+        console.log(`${filename} -> ${JSON.stringify(predictions)}`);
+    });
 }
 
+const readImage = path => {
+    const buf = fs.readFileSync(path)
+    const pixels = jpeg.decode(buf, true)
+    return pixels
+  }
+
+const imageByteArray = (image, numChannels) => {
+    const pixels = image.data
+    const numPixels = image.width * image.height;
+    const values = new Int32Array(numPixels * numChannels);
+  
+    for (let i = 0; i < numPixels; i++) {
+      for (let channel = 0; channel < numChannels; ++channel) {
+        values[i * numChannels + channel] = pixels[i * 4 + channel];
+      }
+    }
+  
+    return values
+  }
+  
+  const imageToInput = (image, numChannels) => {
+    const values = imageByteArray(image, numChannels)
+    const outShape = [image.height, image.width, numChannels];
+    const input = tf.tensor3d(values, outShape, 'int32');
+  
+    return input
+  }
+  
+
 (async () => {
+    model = await mobilenet.load();
     const crawler = await HCCrawler.launch({
         customCrawl: async (page, crawl) => {
             // You can access the page object before requests
@@ -38,7 +84,7 @@ function saveImage(url) {
     // Queue a request
     await crawler.queue({ 
         url: 'https://www.apsofdurham.org/', 
-        maxDepth: 3, 
+        maxDepth: 1, 
         allowedDomains: [ 'www.apsofdurham.org' ],
         followSitemapXml: true });
     await crawler.onIdle(); // Resolved when no queue is left
