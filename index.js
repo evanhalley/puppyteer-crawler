@@ -18,7 +18,7 @@ const progress = require('cli-progress');
     if (!url.startsWith('http')) {
         url = `https://${url}`;
     }
-    console.log(`Searching ${chalk.green(url)} for images containg a ${chalk.green(query)}...`);
+    console.log(`Searching ${chalk.green(url)} for images containing a ${chalk.green(query)}...`);
 
     let imageUrls = await crawlForImages(url, depth);
     let classifications = await processImages(imageUrls);
@@ -112,7 +112,7 @@ async function crawlForImages(url, depth) {
           // You need to extend and return the crawled result
           return result;
         },
-        onSuccess: result => {
+        onSuccess: () => {
           numUrlsCrawled++;
         },
     });
