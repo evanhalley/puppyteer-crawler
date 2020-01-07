@@ -105,15 +105,12 @@ async function crawlForImages(url, depth) {
                     request.continue();
                 }
             });
-          // The result contains options, links, cookies and etc.
-          let result = await crawl();
-          // You can access the page object after requests
-          result.content = await page.content();
-          // You need to extend and return the crawled result
-          return result;
+            let result = await crawl();
+            result.content = await page.content();
+            return result;
         },
         onSuccess: () => {
-          numUrlsCrawled++;
+            numUrlsCrawled++;
         },
     });
     let options = {
